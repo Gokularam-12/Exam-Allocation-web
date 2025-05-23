@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Dashboard - Exam Hall System</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+  <style>
+    .upload-area {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      max-width: 800px;
+      margin: 2rem auto;
+    }
+    .preview-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    .preview-table th, .preview-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    .preview-table th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Admin Dashboard</h1>
+    <button id="darkModeToggle">Toggle Dark Mode</button>
+  </header>
+
+  <main>
+    <div class="upload-area">
+      <h2>Data Upload Panel</h2>
+      
+      <div>
+        <label for="data-type">Select Data Type:</label>
+        <select id="data-type">
+          <option value="students">Student Data</option>
+          <option value="faculty">Faculty Data</option>
+        </select>
+      </div>
+      
+      <input type="file" id="fileInput" accept=".csv" />
+      <button id="uploadBtn">Upload CSV</button>
+      
+      <div id="uploadStatus"></div>
+      
+      <h3>CSV Preview</h3>
+      <div id="preview-container">
+        <table class="preview-table" id="preview-table"></table>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2025 Exam Hall Allotment System</p>
+  </footer>
+
+  <script>
+    // Dark mode toggle (same as before)
+    document.getElementById('darkModeToggle').addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    });
+
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.body.classList.add('dark-mode');
+    }
+
+    // CSV handling
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      Papa.parse(file, {
+        header: true,
+        complete: function(results) {
+          displayPreview(results.data);
+        },
+        error: function(error) {
+          document.getElementById('uploadStatus').innerHTML = 
+            `<p style="color:red;">Error parsing CSV: ${error.message}</p>`;
+        }
+      });
+    });
+
+    function displayPreview(data) {
+      const table = document.getElementById('preview-table');
+      table.innerHTML = '';
+
+      if (data.length === 0) {
+        document.getElementById('uploadStatus').innerHTML = `<p>No data found in CSV.</p>`;
+        return;
+      }
+
+      // Create header row
+      const headerRow = document.createElement('tr');
+      Object.keys(data[0]).forEach(key => {
+        const th = document.createElement('th');
+        th.textContent = key;
+        headerRow.appendChild(th);
+      });
+      table.appendChild(headerRow);
+
+      // Create data rows (limit preview to 5 rows)
+      data.slice(0, 5).forEach(row => {
+        const tr = document.createElement('tr');
+        Object.values(row).forEach(value => {
+          const td = document.createElement('td');
+          td.textContent = value;
+          tr.appendChild(td);
+        });
+        table.appendChild(tr);
+      });
+
+      document.getElementById('uploadStatus').innerHTML = 
+        `<p>Previewing ${Math.min(5, data.length)} of ${data.length} records</p>`;
+    }
+
+    document.getElementById('uploadBtn').addEventListener('click', () => {
+      const fileInput = document.getElementById('fileInput');
+      const dataType = document.getElementById('data-type').value;
+
+      if (!fileInput.files.length) {
+        document.getElementById('uploadStatus').innerHTML = `<p style="color:red;">Please select a CSV file first.</p>`;
+        return;
+      }
+
+      // Simulate upload (in real app, send to server)
+      document.getElementById('uploadStatus').innerHTML = `<p style="color:green;">Successfully processed ${dataType} data!</p>`;
+    });
+  </script>
+</body>
+</html>
