@@ -1,22 +1,23 @@
-# Exam Hall & Faculty Allotment System 🏫
+# 🧾 Exam Hall & Faculty Allotment System
 
-A fully functional, all-in-one web application to manage student exam hall allotments and faculty invigilation duties. This is a **single HTML file** implementation for easy deployment and usage.
+A web-based solution to streamline the process of student exam hall allocation and faculty invigilation scheduling. Built with HTML, CSS, and JavaScript – all in one responsive interface.
+
+🔗 **Live Demo**: [Click here to view](https://gokularam-12.github.io/Exam-Allocation-web/)
 
 ## 🚀 Features
 
-- 📥 Admin Panel: Upload CSV data for students and faculty
-- 🧑‍🎓 Student Login: View hall ticket, time, and generate downloadable PDF
-- 🧑‍🏫 Faculty Login: View assigned duty and details
-- 📄 CSV Preview: See a sample of uploaded data before applying
-- 💡 Fully client-side – No backend required
+- 👨‍🎓 Student and Faculty Login Panel
+- 🗃️ Admin Panel for CSV Upload
+- 📄 PDF Hall Ticket Generation
+- 🔍 QR Code Generation and Scanning
+- 🎯 Responsive UI – Mobile & Desktop Friendly
+- 📊 Preview of uploaded data with dynamic allocation
 
 ## 🛠️ Technologies Used
 
-- HTML5, CSS3, JavaScript (Vanilla)
-- [PapaParse](https://www.papaparse.com/) – for CSV parsing
-- [jsPDF](https://github.com/parallax/jsPDF) – for PDF generation
-
-## 📂 File Structure
+- **Frontend**: HTML, CSS, JavaScript
+- **PDF Generation**: jsPDF
+- **QR Code**: QRCode.js
 
 
 
