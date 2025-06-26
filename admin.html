@@ -65,17 +65,18 @@
   </footer>
 
   <script>
-    // Dark mode toggle (same as before)
+    // Dark mode toggle
     document.getElementById('darkModeToggle').addEventListener('click', () => {
       document.body.classList.toggle('dark-mode');
       localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
     });
 
+    // Load saved dark mode preference
     if (localStorage.getItem('darkMode') === 'true') {
       document.body.classList.add('dark-mode');
     }
 
-    // CSV handling
+    // CSV Preview using PapaParse
     document.getElementById('fileInput').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (!file) return;
@@ -101,7 +102,7 @@
         return;
       }
 
-      // Create header row
+      // Header row
       const headerRow = document.createElement('tr');
       Object.keys(data[0]).forEach(key => {
         const th = document.createElement('th');
@@ -110,7 +111,7 @@
       });
       table.appendChild(headerRow);
 
-      // Create data rows (limit preview to 5 rows)
+      // Data rows (limit to 5 rows)
       data.slice(0, 5).forEach(row => {
         const tr = document.createElement('tr');
         Object.values(row).forEach(value => {
@@ -125,6 +126,7 @@
         `<p>Previewing ${Math.min(5, data.length)} of ${data.length} records</p>`;
     }
 
+    // Upload button simulation
     document.getElementById('uploadBtn').addEventListener('click', () => {
       const fileInput = document.getElementById('fileInput');
       const dataType = document.getElementById('data-type').value;
@@ -134,9 +136,10 @@
         return;
       }
 
-      // Simulate upload (in real app, send to server)
+      // Simulate upload (could send to server using fetch or XMLHttpRequest)
       document.getElementById('uploadStatus').innerHTML = `<p style="color:green;">Successfully processed ${dataType} data!</p>`;
     });
   </script>
 </body>
 </html>
+<!-- End of Admin Dashboard HTML -->
