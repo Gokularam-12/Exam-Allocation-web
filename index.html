@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Exam Hall & Faculty Allotment System</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.legacy.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+      color: #333;
+    }
+    header {
+      background: #2c3e50;
+      color: white;
+      padding: 1.2rem;
+      text-align: center;
+    }
+    main {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: auto;
+    }
+    section {
+      background: white;
+      padding: 1rem 2rem;
+      margin: 1rem 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    input, select, button {
+      margin: 0.5rem 0;
+      padding: 0.6rem;
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background: #2c3e50;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .result-card, table {
+      margin-top: 1rem;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    table th, table td {
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background: #2c3e50;
+      color: white;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Exam Hall & Faculty Allotment System</h1>
+  </header>
+  <main>
+    <section>
+      <h2>Admin Panel (Upload CSV)</h2>
+      <select id="dataType">
+        <option value="students">Student Data</option>
+        <option value="faculty">Faculty Data</option>
+      </select>
+      <input type="file" id="csvFile" accept=".csv" />
+      <button onclick="uploadCSV()">Upload CSV</button>
+      <div id="uploadStatus"></div>
+      <div id="previewTable"></div>
+    </section>
+
+    <section>
+      <h2>Student Login</h2>
+      <input type="text" id="studentReg" placeholder="Enter Registration Number" />
+      <button onclick="getStudent()">Get Hall Info</button>
+      <div id="studentResult"></div>
+    </section>
+
+    <section>
+      <h2>Faculty Login</h2>
+      <input type="text" id="facultyName" placeholder="Enter Faculty Name" />
+      <button onclick="getFaculty()">Get Duty Info</button>
+      <div id="facultyResult"></div>
+    </section>
+  </main>
+
+  <footer>© 2025 Exam System</footer>
+
+  <script>
+    let studentData = [];
+    let facultyData = [];
+
+    function uploadCSV() {
+      const file = document.getElementById('csvFile').files[0];
+      const type = document.getElementById('dataType').value;
+      if (!file) return alert("Select a CSV file");
+      Papa.parse(file, {
+        header: true,
+        complete: function(results) {
+          if (type === "students") studentData = results.data;
+          else facultyData = results.data;
+          document.getElementById('uploadStatus').innerHTML = `<p style='color:green;'>${type} data uploaded!</p>`;
+          previewCSV(results.data);
+        }
+      });
+    }
+
+    function previewCSV(data) {
+      let html = "<table><tr>";
+      Object.keys(data[0]).forEach(key => { html += `<th>${key}</th>` });
+      html += "</tr>";
+      data.slice(0, 5).forEach(row => {
+        html += "<tr>";
+        Object.values(row).forEach(val => { html += `<td>${val}</td>` });
+        html += "</tr>";
+      });
+      html += "</table>";
+      document.getElementById("previewTable").innerHTML = html;
+    }
+
+    function getStudent() {
+      const reg = document.getElementById("studentReg").value.trim();
+      const found = studentData.find(s => s.reg === reg);
+      if (found) {
+        document.getElementById("studentResult").innerHTML = `
+          <div class='result-card'>
+            <p><strong>Name:</strong> ${found.name}</p>
+            <p><strong>Hall:</strong> ${found.hall}</p>
+            <p><strong>Time:</strong> ${found.time}</p>
+            <button onclick='downloadPDF(${JSON.stringify(JSON.stringify(found))})'>Download Hall Ticket</button>
+          </div>`;
+      } else {
+        document.getElementById("studentResult").innerHTML = "<p style='color:red;'>Not found.</p>";
+      }
+    }
+
+    function getFaculty() {
+      const name = document.getElementById("facultyName").value.trim().toLowerCase();
+      const found = facultyData.find(f => f.name.toLowerCase() === name);
+      if (found) {
+        document.getElementById("facultyResult").innerHTML = `
+          <div class='result-card'>
+            <p><strong>Faculty:</strong> ${found.name}</p>
+            <p><strong>Duty:</strong> ${found.duty}</p>
+          </div>`;
+      } else {
+        document.getElementById("facultyResult").innerHTML = "<p style='color:red;'>Not found.</p>";
+      }
+    }
+
+    function downloadPDF(dataString) {
+      const data = JSON.parse(JSON.parse(dataString));
+      const doc = new jsPDF();
+      doc.text(`Hall Ticket`, 10, 10);
+      doc.text(`Name: ${data.name}`, 10, 20);
+      doc.text(`Reg No: ${data.reg}`, 10, 30);
+      doc.text(`Hall: ${data.hall}`, 10, 40);
+      doc.text(`Time: ${data.time}`, 10, 50);
+      doc.save(`${data.reg}_HallTicket.pdf`);
+    }
+  </script>
+</body>
+</html>
